@@ -1,0 +1,97 @@
+.btn {
+    width: 100px;
+    height: 50px;
+    background: #1890ff;
+    text-align: center;
+    border-radius: 4px;
+    color: #fff;
+    position: absolute;
+    z-index: 10;
+    cursor: move;
+}
+.btn-outline{
+    outline: solid #000 1px;
+    outline-offset: -1px;
+    /* -webkit-outline-offset: 5px; */
+    cursor: move;
+    transform: translateZ(0);
+}
+.btnText{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 14px;
+    width: 100%;
+}
+.sizeControl{
+    width: 8px;
+    height: 8px;
+    background: url('./images/hendles.png') no-repeat 50% 50%;
+    position: absolute;
+}
+.tl{
+    cursor: nw-resize;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    transform: translate(-50%,-50%);
+    
+}
+.tm{
+    cursor: n-resize;
+    z-index: 100;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+.tr{
+    cursor: ne-resize;
+    z-index: 100;
+    top: 0;
+    right: 0;
+    transform: translate(50%,-50%);
+}
+.ml{
+    cursor: e-resize;
+    z-index: 100;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%,-50%);
+}
+.mr{
+    cursor: e-resize;
+    z-index: 100;
+    top: 50%;
+    right: 0;
+    transform: translate(50%,-50%);
+}
+.bl{
+    cursor: ne-resize;
+    z-index: 100;
+    bottom: 0;
+    left: 0;
+    transform: translate(-50%,50%);
+}
+.bm{
+    cursor: n-resize;
+    z-index: 100;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%,50%);
+}
+.br{
+    cursor: nw-resize;
+    z-index: 100;
+    bottom: 0;
+    right: 0;
+    transform: translate(50%,50%);
+}
+.close{
+    position: absolute;
+    top: -15px;
+    right: 5px;
+    width: 10px;
+    height: 10px;
+    color: #f00;
+}

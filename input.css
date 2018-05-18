@@ -1,0 +1,21 @@
+.input {
+    width: 600px;
+}
+
+.saveBtn {
+    display: inline-block;
+    color: #1890ff;
+    margin-right: 20px;
+}
+
+
+.ant-input-group-addon {
+    padding: 0;
+}
+
+.dragBtn {
+    width: 200px;
+    height: 40px;
+    background: #1890ff;
+    border-radius: 4px;
+}
