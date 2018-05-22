@@ -1,4 +1,4 @@
 
-html, body, #root {
-  height: auto;
+#root {
+  height: 100%;
 }

@@ -5,10 +5,12 @@
   },
   "dependencies": {
     "antd": "^3.0.0",
+    "events": "^2.0.0",
     "fw-javascripts": "^1.0.0",
     "moment": "^2.19.3",
     "prop-types": "^15.6.1",
     "react": "^16.2.0",
+    "react-color": "^2.14.1",
     "react-dom": "^16.2.0"
   },
   "devDependencies": {
