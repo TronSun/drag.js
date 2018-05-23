@@ -13,10 +13,10 @@ class AttributePart extends React.Component {
         text: ''
     }
     componentDidMount() {
-        this.eventEmitter = emitter.addListener(`initState`, (timestamp) => {
+        this.eventEmitter = emitter.addListener(`initState`, (timestamp,background) => {
             this.setState({
                 curDragDate: timestamp,
-                background: '#1890ff',
+                background: background || this.state.background,
                 value: 12,
                 text: ''
             })

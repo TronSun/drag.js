@@ -15,110 +15,98 @@ import emitter from './ev.js'
 class DragBtn extends React.Component {
     constructor(props) {
         super(props)
-        this.dragBtn = React.createRef()
     }
     state = {
-        text:'拖拽按钮',
-        currentX: 0,
-        currentY: 0,
-        top: 200,
-        left: 450,
-        width: 100,
-        height: 50,
-        flag: false,
-        close: false,
-        shape: true,
-        background: '#1890ff',
-        fontSize: '14px'
+        text: '拖拽按钮',//按钮文本
+        withinX: 0,//鼠标在按钮内位置X
+        withinY: 0,//鼠标在按钮内位置Y
+        top: 200,//按钮top值
+        left: 450,//按钮left值
+        width: 100,//按钮宽度
+        height: 50,//按钮高度
+        flag: false,//是否可以移动按钮
+        close: false,//删除按钮
+        shape: true,//是否显示可以改变形状的锚点
+        background: '#1890ff',//按钮背景颜色
+        fontSize: '12px'//按钮字体大小
     }
     componentDidMount() {
+        let { timestamp } = this.props
         //监控mousemove事件和鼠标抬起事件
         document.addEventListener('mousemove', e => this.moveHandler(e))
         document.addEventListener('mouseup', e => this.endHandler())
-        document.querySelector('.home').addEventListener('click', () => {
-            this.closeShapeHandler()
+        document.addEventListener('contextmenu', e => this.showContextMenu(e))
+
+        //添加按钮shape监听器
+        emitter.addListener(`changeShape`, bol => {
+            this.setState({ shape: bol })
         })
         //添加背景颜色监听器
-        this.eventEmitter = emitter.addListener(`changeBg-${this.props.timestamp}`, (bg) => {
-            this.setState({
-                background: bg
-            })
+        emitter.addListener(`changeBg-${timestamp}`, bg => {
+            this.setState({ background: bg })
         })
         //添加字体大小监听器
-        this.eventEmitter = emitter.addListener(`changeFontSize-${this.props.timestamp}`, (fontSize) => {
-            this.setState({
-                fontSize: fontSize
-            })
+        emitter.addListener(`changeFontSize-${timestamp}`, fontSize => {
+            this.setState({ fontSize: fontSize })
         })
         //添加文本监听器
-        this.eventEmitter = emitter.addListener(`changeText-${this.props.timestamp}`, (text) => {
-            console.log(text)
-            this.setState({
-                text: text
-            })
+        emitter.addListener(`changeText-${timestamp}`, text => {
+            this.setState({ text: text })
         })
     }
     componentWillUnmount() {
         this.props.unMountDrag && this.props.unMountDrag()
-        document.querySelector('.home').removeEventListener('click', () => {
-            this.closeShapeHandler()
-        })
-        emitter.removeListener(this.eventEmitter);
-    }
-    closeShapeHandler = () => {
-        this.setState({ shape: false })
+        emitter.removeAllListeners()
+        document.removeEventListener('mousemove', null)
+        document.removeEventListener('mouseup', null)
     }
     startHanlder = (e) => {
         //鼠标按下时 初始化state的各个值
-        document.querySelector('.home').click()
         let event = e || window.event
+        console.log(event.ctrlKey)
         let newState = {}
-        // let computedStyle = document.defaultView.getComputedStyle(this.dragBtn.current, null)
-        let computedStyle = window.getComputedStyle(this.dragBtn.current, null)
+        let { top, left } = this.state
         event.preventDefault()
         event.stopPropagation()
+        if (event.ctrlKey) {//判断是否按下ctrl键
 
-        let { top, left } = this.state
-        newState.currentX = event.clientX
-        newState.currentY = event.clientY
-        newState.top = computedStyle.top
-        newState.left = computedStyle.left
-        newState.flag = true
-        newState.shape = true
+        } else {
+            emitter.emit(`changeShape`, false)
+            newState.withinX = event.clientX - left //记录鼠标在按钮内的位置X
+            newState.withinY = event.clientY - top //记录鼠标在按钮内的位置Y
+            newState.flag = true
+            newState.shape = true
+            this.setState(newState)
 
-        this.setState(newState)
+            emitter.emit('initState', this.props.timestamp)//初始化属性的默认状态
+        }
 
-        emitter.emit('initState', this.props.timestamp)
+
+
+
+
     }
     moveHandler = (e) => {
         //移动时触发该函数，只有当flag为true时才会变更按钮的位置
-        let { currentX, currentY, left, top, flag, width, height } = this.state
+        let { withinX, withinY, flag } = this.state
         let event = e || window.event
         if (flag) {
-            let curX = event.clientX, curY = event.clientY
-            let disX = curX - currentX, disY = curY - currentY
-            let curLeft = parseInt(left) + disX
-            let curTop = parseInt(top) + disY
-            // console.log(left, disX)
-            // this.setState({
-            //     left: curLeft + 'px',
-            //     top: curTop + 'px'
-            // })
-            this.dragBtn.current.style.left = curLeft + 'px'
-            this.dragBtn.current.style.top = curTop + 'px'
-        }
-
-    }
-    endHandler = () => {
-        //鼠标抬起时 记录当前的left值和top值，并设置flag为false
-        if (this.dragBtn.current != null) {
-            let computedStyle = window.getComputedStyle(this.dragBtn.current, null)
+            //当前的鼠标位置减去鼠标在按钮内的位置获取到当前的left值和top值，目的是保持鼠标在按钮内的位置不变
+            let curLeft = e.clientX - withinX, curTop = e.clientY - withinY
             this.setState({
-                left: computedStyle.left,
-                top: computedStyle.top,
-                flag: false,
+                left: curLeft,
+                top: curTop
             })
         }
+    }
+    endHandler = () => {
+        //鼠标抬起时设置flag为false
+        this.setState({
+            flag: false,
+        })
+    }
+    showContextMenu = (e) => {
+
     }
     showCloseHandler = () => {
         this.setState({ close: !this.state.close })
@@ -145,7 +133,7 @@ class DragBtn extends React.Component {
         })
     }
     render() {
-        let { text,left, top, width, height, close, background, fontSize, shape } = this.state
+        let { text, left, top, width, height, close, background, fontSize, shape } = this.state
         let style = {
             left: left,
             top: top,
@@ -154,11 +142,9 @@ class DragBtn extends React.Component {
             background: background,
             fontSize: fontSize
         }
-        // console.log(text)
         return <div className={shape ? "btn btn-outline" : "btn"} style={style}
-            onMouseDown={e => this.startHanlder(e)}
             // onDoubleClick={this.showCloseHandler}
-            ref={this.dragBtn}>
+            onMouseDown={e => this.startHanlder(e)}>
             <div className="btnText">
                 <span>{text}</span>
             </div>
@@ -202,4 +188,5 @@ let showDrag = (timestamp) => {
         }}
     />, node)
 }
+
 export default showDrag
