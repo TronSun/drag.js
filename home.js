@@ -4,6 +4,8 @@ import './index.css';
 import input from './input.css';
 import { DeteleTable, NumericInputDemo, Drag, Page, showDrag, AttributePart } from './components';
 import { Breadcrumb, Button, DatePicker, Switch, Table, Icon, Divider, Input, InputNumber, Popconfirm, Form } from 'antd';
+import { Layout, Menu } from 'antd';
+const { Header, Footer, Sider, Content } = Layout;
 import emitter from './components/ev.js'
 
 function App() {
@@ -13,12 +15,12 @@ function App() {
   function createHandler(text) {
     showDrag(text)
   }
-  showDrag('哈哈哈')
+  // showDrag('哈哈哈')
   return (
 
     <div>
-      <Button type="primary" className="button" onClick={() => createHandler('我是拖拽按钮...')}>生成拖拽按钮</Button>
-      {/*<Breadcrumb>
+      {/*<Button type="primary" className="button" onClick={() => createHandler('我是拖拽按钮...')}>生成拖拽按钮</Button>
+      <Breadcrumb>
         <Breadcrumb.Item>Home</Breadcrumb.Item>
         <Breadcrumb.Item><a href="">Application Center</a></Breadcrumb.Item>
         <Breadcrumb.Item><a href="">Application List</a></Breadcrumb.Item>
@@ -27,7 +29,19 @@ function App() {
       <Drag />
       <Drag />
       <NumericInputDemo />
-      <DeteleTable />*}
+  <DeteleTable />*/}
+      <Layout className="layout">
+        <Header>
+          
+        </Header>
+        <Content style={{ padding: '0 50px' }}>
+          
+        </Content>
+        <Footer style={{ textAlign: 'center' }}>
+          
+      </Footer>
+      </Layout>
+
       {/*<Switch defaultChecked size='small' onChange={onChange} />*/}
       {/*<hr /><br />
       <hr /><br />
@@ -358,4 +372,4 @@ class DragApp extends React.Component {
   }
 }
 
-ReactDOM.render(<DragApp />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));

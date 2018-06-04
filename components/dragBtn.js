@@ -20,26 +20,28 @@ class DragBtn extends React.Component {
         text: '拖拽按钮',//按钮文本
         withinX: 0,//鼠标在按钮内位置X
         withinY: 0,//鼠标在按钮内位置Y
-        top: 200,//按钮top值
-        left: 450,//按钮left值
+        top: 318,//按钮top值
+        left: 575,//按钮left值
         width: 100,//按钮宽度
         height: 50,//按钮高度
         flag: false,//是否可以移动按钮
         close: false,//删除按钮
         shape: true,//是否显示可以改变形状的锚点
         background: '#1890ff',//按钮背景颜色
-        fontSize: '12px'//按钮字体大小
+        fontSize: '12px',//按钮字体大小,
+        menuLeft: 0,//右键菜单left值
+        menuTop: 0,//右键菜单top值
     }
     componentDidMount() {
         let { timestamp } = this.props
-        //监控mousemove事件和鼠标抬起事件
+        //监控mousemove事件和mouseup事件
         document.addEventListener('mousemove', e => this.moveHandler(e))
-        document.addEventListener('mouseup', e => this.endHandler())
-        document.addEventListener('contextmenu', e => this.showContextMenu(e))
+        document.addEventListener('mouseup', this.endHandler)
+        // document.addEventListener('keydown',e => this.deleteHandler(e))
 
         //添加按钮shape监听器
         emitter.addListener(`changeShape`, bol => {
-            this.setState({ shape: bol })
+            this.setState({ shape: bol, close: false })
         })
         //添加背景颜色监听器
         emitter.addListener(`changeBg-${timestamp}`, bg => {
@@ -53,9 +55,10 @@ class DragBtn extends React.Component {
         emitter.addListener(`changeText-${timestamp}`, text => {
             this.setState({ text: text })
         })
+        emitter.setMaxListeners(100)
     }
     componentWillUnmount() {
-        this.props.unMountDrag && this.props.unMountDrag()
+        // this.props.unMountDrag && this.props.unMountDrag()
         emitter.removeAllListeners()
         document.removeEventListener('mousemove', null)
         document.removeEventListener('mouseup', null)
@@ -63,28 +66,22 @@ class DragBtn extends React.Component {
     startHanlder = (e) => {
         //鼠标按下时 初始化state的各个值
         let event = e || window.event
-        console.log(event.ctrlKey)
         let newState = {}
         let { top, left } = this.state
-        event.preventDefault()
+        // event.preventDefault()
         event.stopPropagation()
-        if (event.ctrlKey) {//判断是否按下ctrl键
+        // if (event.ctrlKey) {//判断是否按下ctrl键
 
-        } else {
-            emitter.emit(`changeShape`, false)
-            newState.withinX = event.clientX - left //记录鼠标在按钮内的位置X
-            newState.withinY = event.clientY - top //记录鼠标在按钮内的位置Y
-            newState.flag = true
-            newState.shape = true
-            this.setState(newState)
+        // } else {
 
-            emitter.emit('initState', this.props.timestamp)//初始化属性的默认状态
-        }
-
-
-
-
-
+        // }
+        emitter.emit(`changeShape`, false)
+        newState.withinX = event.clientX - left //记录鼠标在按钮内的位置X
+        newState.withinY = event.clientY - top //记录鼠标在按钮内的位置Y
+        emitter.emit('initState', this.props.timestamp)//初始化属性的默认状态
+        newState.flag = true
+        newState.shape = true
+        this.setState(newState)
     }
     moveHandler = (e) => {
         //移动时触发该函数，只有当flag为true时才会变更按钮的位置
@@ -101,18 +98,20 @@ class DragBtn extends React.Component {
     }
     endHandler = () => {
         //鼠标抬起时设置flag为false
-        this.setState({
-            flag: false,
-        })
+        this.setState({ flag: false })
     }
     showContextMenu = (e) => {
-
+        let { left, top } = this.state
+        e.preventDefault();
+        this.setState({
+            menuLeft: e.clientX - left + 'px',
+            menuTop: e.clientY - top + 'px',
+            close: true
+        })
     }
-    showCloseHandler = () => {
-        this.setState({ close: !this.state.close })
-    }
-    closeHandler = () => {
-        unmountComponentAtNode(this.props.mountedNode);
+    closeHandler = (e) => {
+        e.stopPropagation()
+        this.props.unMountDrag && this.props.unMountDrag()
     }
     /**
      * w:按钮宽度
@@ -122,9 +121,8 @@ class DragBtn extends React.Component {
      * 每一个参数没传值或为undefined时 默认为当前值不变
      * @memberof setShapeHandler
      */
-    setShapeHandler = (w, h, l, t) => {
+    setShapeHandler = (l, t, w, h) => {
         let { left, top, width, height } = this.state
-        // console.log(w,h,l,t)
         this.setState({
             width: w || width,
             height: h || height,
@@ -132,8 +130,30 @@ class DragBtn extends React.Component {
             top: t || top,
         })
     }
+    keyDownHandler = (e) => {
+        console.log(e.keyCode)
+        let keyCode = e.keyCode
+        let l, t
+        if (keyCode == 46) {//删除
+            this.closeHandler(e)
+        }
+        if (keyCode == 37) {//左移
+            l = --this.state.left
+        }
+        if (keyCode == 38) {//上移
+            t = --this.state.top
+        }
+        if (keyCode == 39) {//右移
+            l = ++this.state.left
+        }
+        if (keyCode == 40) {//下移
+            t = ++this.state.top
+        }
+        this.setShapeHandler(l, t)
+    }
     render() {
-        let { text, left, top, width, height, close, background, fontSize, shape } = this.state
+        let { text, left, top, width, height, close, background, fontSize, shape, menuLeft, menuTop } = this.state
+        console.log(shape)
         let style = {
             left: left,
             top: top,
@@ -142,23 +162,31 @@ class DragBtn extends React.Component {
             background: background,
             fontSize: fontSize
         }
-        return <div className={shape ? "btn btn-outline" : "btn"} style={style}
-            // onDoubleClick={this.showCloseHandler}
-            onMouseDown={e => this.startHanlder(e)}>
+        let menuStyle = {
+            left: menuLeft,
+            top: menuTop,
+            display: close ? 'block' : 'none'
+        }
+        return <div className={shape ? "btn btn-outline" : "btn"} style={style} tabIndex="0"
+            onContextMenu={e => this.showContextMenu(e)}
+            onMouseDown={e => this.startHanlder(e)}
+            onKeyDown={e => this.keyDownHandler(e)}>
             <div className="btnText">
                 <span>{text}</span>
             </div>
+            <div className="contextMenu" style={menuStyle}>
+                <div className="tabMenu" onMouseDown={this.closeHandler}>删除</div>
+            </div>
             {shape && <div>
-                {<Anchor direction='tl' {...style} setShapeHandler={this.setShapeHandler} />}
-                {<Anchor direction='tm' {...style} setShapeHandler={this.setShapeHandler} />}
-                {<Anchor direction='tr' {...style} setShapeHandler={this.setShapeHandler} />}
-                {<Anchor direction='ml' {...style} setShapeHandler={this.setShapeHandler} />}
-                {<Anchor direction='mr' {...style} setShapeHandler={this.setShapeHandler} />}
-                {<Anchor direction='bl' {...style} setShapeHandler={this.setShapeHandler} />}
-                {<Anchor direction='bm' {...style} setShapeHandler={this.setShapeHandler} />}
-                {<Anchor direction='br' {...style} setShapeHandler={this.setShapeHandler} />}
+                <Anchor direction='tl' {...style} setShapeHandler={this.setShapeHandler} />
+                <Anchor direction='tm' {...style} setShapeHandler={this.setShapeHandler} />
+                <Anchor direction='tr' {...style} setShapeHandler={this.setShapeHandler} />
+                <Anchor direction='ml' {...style} setShapeHandler={this.setShapeHandler} />
+                <Anchor direction='mr' {...style} setShapeHandler={this.setShapeHandler} />
+                <Anchor direction='bl' {...style} setShapeHandler={this.setShapeHandler} />
+                <Anchor direction='bm' {...style} setShapeHandler={this.setShapeHandler} />
+                <Anchor direction='br' {...style} setShapeHandler={this.setShapeHandler} />
             </div>}
-            {close && <div className="close" onClick={this.closeHandler}>X</div>}
         </div>
     }
 }

@@ -2,38 +2,57 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import input from './input.css';
-import { DeteleTable, NumericInputDemo, Drag, Page, showDrag, AttributePart } from './components';
+import { DeteleTable, NumericInputDemo, Drag, Page, showDrag, showLayoutBtn, showLayout, AttributePart } from './components';
 import { Breadcrumb, Button, DatePicker, Switch, Table, Icon, Divider, Input, InputNumber, Popconfirm, Form } from 'antd';
 import emitter from './components/ev.js'
 
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
+import combineApp from './reduces'
 
+let store = createStore(combineApp)
 
 class DragApp extends React.Component {
   state = {
     timestamp: null,
   }
+  componentDidMount() {
+    let now = +new Date()
+    this.setState({ timestamp: now })
+    showLayout(now)
+  }
   closeShapeHandler = () => {
     let { timestamp } = this.state
     emitter.emit(`changeShape`, false)
   }
-  createHandler = () => {
+  createBtnHandler = () => {
     let now = +new Date()
     this.setState({ timestamp: now })
     showDrag(now)
     emitter.emit('initState', now, '#1890ff')
     emitter.emit(`changeShape`, false)
   }
+  createLayoutHandler = () => {
+    
+  }
   render() {
-    return <div className="dragApp" >
-      <Button type="primary" className="button" onClick={() => this.createHandler()}>生成拖拽按钮</Button>
-      <div className="home" onClick={this.closeShapeHandler}></div>
-      <div className="attributePart">
-        <AttributePart />
+    return <div className="dragApp">
+      <div className="btnBox">
+        <Button type="primary" className="button" onClick={() => this.createBtnHandler()}>生成拖拽按钮</Button>
+        <br />
+        <Button type="primary" className="button" onClick={() => this.createLayoutHandler()}>生成页面</Button>
+        <br />
       </div>
+      <div className="home" onMouseDown={this.closeShapeHandler}></div>
+      {/*<div className="attributePart">
+        <AttributePart />
+  </div>*/}
     </div>
   }
 }
 
-ReactDOM.render(<DragApp />, document.getElementById('root'));
-// 一个父组件，包含生成拖拽按钮的组件、显示拖拽按钮的div、显示设置拖拽按钮的组件
-// 点击生成拖拽按钮组件，会新建一个div，div里面包含一个拖拽组件。
+ReactDOM.render(
+  <Provider store={store}>
+    <DragApp />
+  </Provider>,
+  document.getElementById('root'))

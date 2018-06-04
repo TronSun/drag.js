@@ -11,7 +11,9 @@
     "prop-types": "^15.6.1",
     "react": "^16.2.0",
     "react-color": "^2.14.1",
-    "react-dom": "^16.2.0"
+    "react-dom": "^16.2.0",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0"
   },
   "devDependencies": {
     "atool-build": "^0.9.0",

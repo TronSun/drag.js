@@ -1,0 +1,113 @@
+
+.layoutBox{
+    width: 100%;
+    display: table;
+}
+.layout {
+    width: 600px;
+    height: 600px;
+    text-align: center;
+    background: #ccc;
+    margin-top: 60px;
+    float: left;
+}
+
+/* .layout span {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+} */
+.drag-outline{
+    outline: solid #000 1px;
+    outline-offset: -1px;
+    /* -webkit-outline-offset: 5px; */
+    cursor: move;
+    transform: translateZ(0);
+}
+.header {
+    width: 400px;
+    height: 40px;
+    background: #FF7918;
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: move;
+    z-index: 5;
+}
+
+.dragText {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+.dragText span{
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 100%;
+}
+
+.container {
+    width: 400px;
+    height: 300px;
+    background: #58E052;
+    position: absolute;
+    top: 40px;
+    left: 0;
+    cursor: move;
+    z-index: 5;
+}
+
+.footer {
+    width: 400px;
+    height: 100px;
+    background: #9E52E0;
+    position: absolute;
+    top: 440px;
+    left: 0;
+    cursor: move;
+    z-index: 5;
+}
+.title{
+    position: absolute;
+    cursor: move;
+    z-index: 6;
+}
+.attribute{
+    position: absolute;
+    right: 100px;
+    top: 100px;
+    float: right;
+}
+.attribute-bg,.attribube-color{
+    font-size: 16px;
+}
+.attribute-bg span,.attribube-color span{
+    display: inline-block;
+    width: 30px;
+    height: 10px;
+    border: 1px solid #000;
+}
+.bgBtn {
+    width: 40px;
+    height: 20px;
+    font-size: 14px;
+    text-align: center;
+    line-height: 20px;
+    cursor: pointer;
+    display: inline-block;
+    color: #1890ff;
+}
+/* .confirmColor{
+    background: #1890ff;
+} */
+.sketch{
+    position: absolute;
+    z-index: 12;
+}

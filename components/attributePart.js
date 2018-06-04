@@ -52,6 +52,9 @@ class AttributePart extends React.Component {
         this.setState({ text: e.target.value })
         emitter.emit(`changeText-${curDragDate}`, e.target.value)
     }
+    keyDown = (e) => {
+        console.log(e.keyCode)
+    }
     render() {
         let { showPicker, background, value, text } = this.state
         let style = {
@@ -79,10 +82,9 @@ class AttributePart extends React.Component {
             </div>
 
             <div className="attritube-text">
-                文本内容：<input type="text" value={text}
+                文本内容：<input type="text" value={text} onKeyDown={e => this.keyDown(e)}
                     onChange={(e) => this.inputChangeHandler(e)} />
             </div>
-
         </div>
     }
 }
